@@ -233,7 +233,7 @@ config = {
 	\node (conv1) [conv, rotate=90, below of=start, yshift=-0.5cm] {Conv ($3\times3\times 8$, padding=1)};
 	\node (acti1) [acti, rotate=90, below of=conv1] {Relu};
 	\node (pool1) [pool, rotate=90, below of=acti1] {AvgPool ($2\times2$, padding=0)};
-	\node (conv2) [conv, rotate=90, below of=pool1, yshift=-0.5cm] {Conv ($3\times3\times 4$, padding=1)};
+	\node (conv2) [conv, rotate=90, below of=pool1, yshift=-0.5cm] {Conv ($3\times3\times 16$, padding=1)};
 	\node (acti2) [acti, rotate=90, below of=conv2] {Relu};
 	\node (pool2) [pool, rotate=90, below of=acti2] {AvgPool ($2\times2$, padding=0)};
 	\node (linear1) [process, rotate=90, below of=pool2, yshift=-0.5cm] {Linear ($784\times256$)};
