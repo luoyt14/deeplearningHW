@@ -6,6 +6,7 @@ import numpy as np
 from torchvision import datasets, transforms
 from layer import BatchNorm1d
 from utils import LOG_INFO
+import matplotlib.pyplot as plt
 
 TRAIN_BATCH_SIZE = 100
 TEST_BATCH_SIZE = 100
@@ -39,10 +40,10 @@ test_loader = torch.utils.data.DataLoader(
 model = nn.Sequential(
     # TODO: implement your network architecture
     nn.Linear(784, 128),
-    BatchNorm1d(128),
+    # BatchNorm1d(128),
     nn.ReLU(),
     nn.Linear(128, 64),
-    BatchNorm1d(64),
+    # BatchNorm1d(64),
     nn.ReLU(),
     nn.Linear(64, 10)
 ).to(device)
@@ -53,6 +54,10 @@ def train(model, device, train_loader, optimizer, epoch):
     model.train()
     loss_list = []
     acc_list = []
+
+    train_loss_list = []
+    train_acc_list = []
+
     for batch_idx, (data, target) in enumerate(train_loader):
         data, target = data.to(device), target.to(device)
         data = data.view(data.shape[0], -1)  # flatten
@@ -62,9 +67,11 @@ def train(model, device, train_loader, optimizer, epoch):
         loss.backward()
         optimizer.step()
         loss_list.append(loss.item())
+        train_loss_list.append(loss.item())
         pred = output.argmax(dim=1, keepdim=True) # get the index of the max log-probability
         acc = pred.eq(target.view_as(pred)).float().mean()
         acc_list.append(acc.item())
+        train_acc_list.append(acc.item())
         if batch_idx % LOG_INTERVAL == 0:
             msg = 'Train Epoch: {} [{}/{} ({:.0f}%)]\tAvg Loss: {:.4f}\tAvg Acc: {:.4f}'.format(
                 epoch, batch_idx * len(data), len(train_loader.dataset),
@@ -72,6 +79,9 @@ def train(model, device, train_loader, optimizer, epoch):
             LOG_INFO(msg)
             loss_list.clear()
             acc_list.clear()
+
+    return train_loss_list, train_acc_list
+
 
 def test(model, device, test_loader):
     model.eval()
@@ -92,6 +102,39 @@ def test(model, device, test_loader):
         test_loss, correct, len(test_loader.dataset),
         100. * correct / len(test_loader.dataset)))
 
+    return test_loss, correct / len(test_loader.dataset)
+
+
+test_loss, test_acc = [], []
+train_loss, train_acc = [], []
 for epoch in range(1, EPOCHS + 1):
-    train(model, device, train_loader, optimizer, epoch)
-    test(model, device, test_loader)
+    testloss, testacc = test(model, device, test_loader)
+    test_loss.append(testloss)
+    test_acc.append(testacc)
+
+    trainloss, trainacc = train(model, device, train_loader, optimizer, epoch)
+    train_loss.extend(trainloss)
+    train_acc.extend(trainacc)
+
+plt.plot(train_loss, label='train loss vs. iterations', color='green')
+plt.xlabel('iteration(s)')
+plt.ylabel("train loss")
+plt.title("train loss vs. iterations")
+plt.show()
+plt.plot(train_acc, label='train accuracy vs. iterations', color='r')
+plt.xlabel('iteration(s)')
+plt.ylabel("train accuracy")
+plt.title("train accuracy vs. iterations")
+plt.show()
+
+plt.plot(test_loss, label='test loss vs. epochs', color='green')
+plt.xlabel('epoch(s)')
+plt.ylabel("test loss")
+plt.title("test loss vs. epochs")
+plt.show()
+plt.plot(test_acc, label='test accuracy vs. epochs', color='r')
+plt.xlabel('epoch(s)')
+plt.ylabel("test accuracy")
+plt.title("test accuracy vs. epochs")
+plt.show()
+

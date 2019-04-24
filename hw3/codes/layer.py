@@ -18,16 +18,18 @@ class BatchNorm1d(nn.Module):
     def forward(self, x):
         if self.training:
             '''Your codes here'''
-            self.running_mean = torch.mean(x, 0)
-            self.running_var = torch.var(x, 0)
-            xnorm = (x - self.running_mean) / torch.sqrt(self.running_var + eps)
+            mu = self.running_mean * self.momentum + (1 - self.momentum) * torch.mean(x, 0).data
+            var = self.running_var * self.momentum + (1 - self.momentum) * torch.var(x, 0).data
+            xnorm = (x - mu) / torch.sqrt(var + self.eps)
+            self.running_mean = mu
+            self.running_var = var
             return self.weight * xnorm + self.bias
 
         else:
             '''Your codes here'''
-            mu = self.running_mean * self.momentum + (1 - self.momentum) * x
-            var = self.running_var * self.momentum + (1 - self.momentum) * x
-            xnorm = (x - mu) / torch.sqrt(var + eps)
+            mu = self.running_mean
+            var = self.running_var
+            xnorm = (x - mu) / torch.sqrt(var + self.eps)
             return self.weight * xnorm + self.bias
 
 
@@ -47,14 +49,29 @@ class BatchNorm2d(nn.Module):
     def forward(self, x):
         if self.training:
             '''Your codes here'''
-            self.running_mean = torch.mean(x, (0,2,3))
-            self.running_var = torch.var(x, (0,2,3))
-            xnorm = (x - self.running_mean) / torch.sqrt(self.running_var + eps)
-            return self.weight * xnorm + self.bias
+            xnew = torch.zeros(x.size())
+            mu = torch.zeros(self.num_features)
+            var = torch.ones(self.num_features)
+            for i in range(self.num_features):
+                mu[i] = self.running_mean[i] * self.momentum + (1 - self.momentum) * torch.mean(x[:, i, :, :]).data
+                var[i] = self.running_var[i] * self.momentum + (1 - self.momentum) * torch.var(x[:, i, :, :]).data
+                temp = (x[:, i, :, :] - self.running_mean[i]) / torch.sqrt(self.running_var[i] + self.eps)
+                xnew[:, i, :, :] = self.weight[i] * temp + self.bias[i]
+            self.running_mean = mu
+            self.running_var = var
+            return xnew
 
         else:
             '''Your codes here'''
-            pass
+            xnew = torch.zeros(x.size())
+            mu = torch.zeros(self.num_features)
+            var = torch.ones(self.num_features)
+            for i in range(self.num_features):
+                mu[i] = self.running_mean[i]
+                var[i] = self.running_var[i]
+                temp = (x[:, i, :, :] - mu[i]) / torch.sqrt(var[i] + self.eps)
+                xnew[:, i, :, :] = self.weight[i] * temp + self.bias[i]
+            return xnew
 
 
 class Reshape(nn.Module):
