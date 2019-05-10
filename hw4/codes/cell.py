@@ -37,7 +37,8 @@ class RNNCell(nn.Module):
 
     def forward(self, input, h):
         # TODO: your codes here
-        return torch.tanh(input * self.w_ih + self.b_ih + h * self.w_hh + self.b_hh)
+        h_new = torch.tanh(torch.matmul(input, self.w_ih) + self.b_ih + torch.matmul(h[0], self.w_hh) + self.b_hh)
+        return h_new, h_new
 
 
 class GRUCell(nn.Module):
@@ -91,10 +92,11 @@ class GRUCell(nn.Module):
 
     def forward(self, input, h):
         # TODO: your codes here
-        r = torch.sigmoid(torch.matmul(input, self.w_ir) + self.w_br + torch.matmul(h, self.w_hr) + self.b_hr)
-        z = torch.sigmoid(torch.matmul(input, self.w_iz) + self.w_bz + torch.matmul(h, self.w_hz) + self.b_hz)
-        n = torch.tanh(torch.matmul(input, self.w_in) + self.w_bn + r * (torch.matmul(h, self.w_hn) + self.b_hn))
-        return (1 - z) * n + z * h
+        r = torch.sigmoid(torch.matmul(input, self.w_ir) + self.w_br + torch.matmul(h[0], self.w_hr) + self.b_hr)
+        z = torch.sigmoid(torch.matmul(input, self.w_iz) + self.w_bz + torch.matmul(h[0], self.w_hz) + self.b_hz)
+        n = torch.tanh(torch.matmul(input, self.w_in) + self.w_bn + r * (torch.matmul(h[0], self.w_hn) + self.b_hn))
+        h_new = (1 - z) * n + z * h[0]
+        return h_new, h_new
 
 
 class LSTMCell(nn.Module):
@@ -168,4 +170,4 @@ class LSTMCell(nn.Module):
         o = torch.sigmoid(torch.matmul(input, self.w_io) + self.b_io + torch.matmul(state[0], self.w_ho) + self.b_ho)
         c = f * state[1] + i * g
         h = o * torch.tanh(c)
-        return [h, c]
+        return h, c

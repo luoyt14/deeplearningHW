@@ -1,4 +1,5 @@
 import torch.nn as nn
+import torch
 
 
 class Model(nn.Module):
@@ -22,11 +23,17 @@ class Model(nn.Module):
         # 1. get embdding vectors
         # embedded: [sent len, batch size, emb dim]
         embedded = self.embedding(text)
+
         # 2. initialize hidden vector (considering special parts of LSTMCell)
         # hidden: [1, batch size, hid dim]
+        hidden = torch.randn(2, text.shape[1], self.hidden_dim)
 
         # 3. multiple step recurrent forward
+        for i in range(text.shape[0]):
+            hidden = self.rnn(embedded[i], hidden)
+            
 
         # 4. get final output
-
-        pass
+        output = self.fc(hidden[0].squeeze(0))
+        
+        return output
