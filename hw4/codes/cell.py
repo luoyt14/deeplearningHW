@@ -92,9 +92,9 @@ class GRUCell(nn.Module):
 
     def forward(self, input, h):
         # TODO: your codes here
-        r = torch.sigmoid(torch.matmul(input, self.w_ir) + self.w_br + torch.matmul(h[0], self.w_hr) + self.b_hr)
-        z = torch.sigmoid(torch.matmul(input, self.w_iz) + self.w_bz + torch.matmul(h[0], self.w_hz) + self.b_hz)
-        n = torch.tanh(torch.matmul(input, self.w_in) + self.w_bn + r * (torch.matmul(h[0], self.w_hn) + self.b_hn))
+        r = torch.sigmoid(torch.matmul(input, self.w_ir) + self.b_ir + torch.matmul(h[0], self.w_hr) + self.b_hr)
+        z = torch.sigmoid(torch.matmul(input, self.w_iz) + self.b_iz + torch.matmul(h[0], self.w_hz) + self.b_hz)
+        n = torch.tanh(torch.matmul(input, self.w_in) + self.b_in + r * (torch.matmul(h[0], self.w_hn) + self.b_hn))
         h_new = (1 - z) * n + z * h[0]
         return h_new, h_new
 

@@ -17,13 +17,13 @@ torch.manual_seed(1234)
 parser = argparse.ArgumentParser()
 parser.add_argument("--max_vocab_size", default=25000, type=int, help="vocabulary size.")
 parser.add_argument("--n_labels", default=5, type=int, help="Number of labels.")
-parser.add_argument("--epochs", default=50, type=int, help="Number of epoch.")
+parser.add_argument("--epochs", default=5, type=int, help="Number of epoch.")
 parser.add_argument("--embedding_dim", default=300, type=int, help="Size of word embedding.")
 parser.add_argument("--hidden_dim", default=512, type=int, help="Size of each model layer.")
 parser.add_argument("--batch_size", default=64, type=int, help="Batch size to use during training.")
 parser.add_argument("--display_freq", default=50, type=int, help="Display frequency")
 parser.add_argument("--lr", default=0.01, type=float, help="Learning rate for optimizer")
-parser.add_argument("--cell_type", default='RNNCell', type=str,
+parser.add_argument("--cell_type", default='LSTMCell', type=str,
                     choices=['RNNCell', 'GRUCell', 'LSTMCell'], help="Available rnn cells")
 
 args = parser.parse_args()
@@ -113,11 +113,14 @@ def evaluate(model, iterator, criterion):
 best_acc = 0
 best_epoch = -1
 train_loss, train_acc = [], []
+val_loss, val_acc = [], []
 for epoch in range(1, args.epochs + 1):
     trainloss, trainacc = train(epoch, model, train_iterator, optimizer, criterion)
     train_loss.extend(trainloss)
     train_acc.extend(trainacc)
     valid_loss, valid_acc = evaluate(model, valid_iterator, criterion)
+    val_loss.append(valid_loss)
+    val_acc.append(valid_acc)
     msg = '...Epoch %02d, val loss = %.4f, val acc = %.4f' % (
         epoch, valid_loss, valid_acc
     )
@@ -145,3 +148,16 @@ plt.xlabel('iteration(s)')
 plt.ylabel("train accuracy")
 plt.title("train accuracy vs. iterations")
 plt.savefig("trainacc.png")
+
+plt.figure()
+plt.plot(val_loss, label='valid loss vs. epochs', color='green')
+plt.xlabel('epoch(s)')
+plt.ylabel("valid loss")
+plt.title("valid loss vs. epochs")
+plt.savefig("validloss.png")
+plt.figure()
+plt.plot(val_acc, label='valid accuracy vs. epochs', color='r')
+plt.xlabel('epoch(s)')
+plt.ylabel("valid accuracy")
+plt.title("valid accuracy vs. epochs")
+plt.savefig("validacc.png")

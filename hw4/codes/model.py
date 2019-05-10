@@ -26,7 +26,7 @@ class Model(nn.Module):
 
         # 2. initialize hidden vector (considering special parts of LSTMCell)
         # hidden: [1, batch size, hid dim]
-        hidden = torch.randn(2, text.shape[1], self.hidden_dim)
+        hidden = torch.zeros(2, text.shape[1], self.hidden_dim)
 
         # 3. multiple step recurrent forward
         for i in range(text.shape[0]):
@@ -34,6 +34,6 @@ class Model(nn.Module):
             
 
         # 4. get final output
-        output = self.fc(hidden[0].squeeze(0))
+        output = self.fc(hidden[0])
         
         return output
