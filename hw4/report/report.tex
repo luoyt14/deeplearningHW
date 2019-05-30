@@ -92,7 +92,7 @@ We can use Algorithm \ref{alg:lstmcell} to complete the forward process of LSTMC
 
 \chapter{Results}
 \section{Plot the loss value and accuracy value of one-layer RNN with 3 rnncells against to every epoch during training}
-In this section, we use $lr=0.01$ with 3 rnncells to complete the experiments, and the loss value and accuracy value curves are as follow.
+In this section, we use $lr=0.01, epochs=5$ with 3 rnncells to complete the experiments, and the loss value and accuracy value curves are as follow.
 \subsection{RNNCell}
 \begin{figure}[!h]
 	\centering
@@ -175,4 +175,59 @@ In this section, we use $lr=0.01$ with 3 rnncells to complete the experiments, a
 %\end{figure}
 
 \section{Compare and analyze the performance of the 3 rnncells}
+We sum up the test results of 3 rnncells and list the results in Table \ref{res1}. From the table and the Figure in last section, we can find that:
+\begin{itemize}
+	\item Using RNNCell, the training speed is very fast but the test accuracy is not well;
+	\item Using GRUCell, the training speed is also fast, and the test accuracy is better than RNNCell;
+	\item Using LSTMCell, the training speed is very slow, and the test accuracy and test loss is better than RNNCell.
+\end{itemize}
+
+Therefore, we can find in this work, GRUCell is better than the other two rnncells.
+
+\begin{table}[!h]
+	\centering\caption{\label{res1}The comparison results of 3 rnncells}
+	\begin{tabular}{|c|c|c|}
+		\hline
+		Cell Type & Test Accuracy & Test Loss \\
+		\hline
+		RNNCell & 0.5350 & 1.0595 \\
+		\hline
+		GRUCell & 0.5825 & 1.2509 \\
+		\hline
+		LSTMCell & 0.5765 & 1.0741 \\
+		\hline
+	\end{tabular}
+\end{table}
+
+\section{Using 100 dimensional embedding vector}
+In this section, we use 100 dimensional embedding vector and GRUCell to do the experiment. We also plot the train loss curve and train accuracy curve against to every iteration in Figure \ref{trainres22}. The best test accuracy is 0.5945 and the best test loss is 1.2753. We can find that the test accuracy is a little better than before and the train speed is a litter fast because the dimension is a smaller than before.
+
+\begin{figure}[!h]
+	\centering
+	\begin{minipage}[t]{0.48\textwidth}
+		\centering
+		\includegraphics[width=\textwidth]{../codes/trainlossgrucell2}
+	\end{minipage}
+	\begin{minipage}[t]{0.48\textwidth}
+		\centering
+		\includegraphics[width=\textwidth]{../codes/trainaccgrucell2}
+	\end{minipage}
+	\caption{\label{trainres22}train loss curve and train accuracy curve using 100 dimensional embedding vector against to every iteration}
+\end{figure}
+
+\section{Initialize embedding vectors without normal distribution}
+In this section, we try to set $unk\_init=None$ to do the experiment that initialize embedding vectors without normal distribution. We also plot the train loss curve and train accuracy curve against to every iteration in Figure \ref{trainres32}. The best test accuracy is 0.6466 and the best test loss is 0.9108. We can find that the test accuracy and the test loss is much better than before.
+
+\begin{figure}[!h]
+	\centering
+	\begin{minipage}[t]{0.48\textwidth}
+		\centering
+		\includegraphics[width=\textwidth]{../codes/trainlossgrucell3}
+	\end{minipage}
+	\begin{minipage}[t]{0.48\textwidth}
+		\centering
+		\includegraphics[width=\textwidth]{../codes/trainaccgrucell3}
+	\end{minipage}
+	\caption{\label{trainres32}train loss curve and train accuracy curve using 300 dimensional embedding vector and GRUCell without normal distribution against to every iteration}
+\end{figure}
 \end{document}
