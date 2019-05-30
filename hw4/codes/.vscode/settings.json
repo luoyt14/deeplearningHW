@@ -1,3 +1,8 @@
+<<<<<<< HEAD
 {
     "python.pythonPath": "/Users/luoyantian/anaconda3/envs/pytorch/bin/python"
+=======
+{
+    "python.pythonPath": "D:\\anaconda3\\envs\\py37test\\python.exe"
+>>>>>>> 5604aa590daf370765bd833ec3adc32218bb65b3
 }
